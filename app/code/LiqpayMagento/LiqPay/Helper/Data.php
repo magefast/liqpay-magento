@@ -26,6 +26,9 @@ class Data extends AbstractHelper
     const XML_PATH_TEST_ORDER_SURFIX = 'payment/liqpaymagento_liqpay/sandbox_order_surfix';
     const XML_PATH_DESCRIPTION = 'payment/liqpaymagento_liqpay/description';
     const XML_PATH_CALLBACK_SECURITY_CHECK = 'payment/liqpaymagento_liqpay/security_check';
+    const XML_PATH_FRONTEND_WEBSITE_URL  = 'payment/liqpaymagento_liqpay/frontend_website_url';
+    const XML_PATH_SERVER_WEBSITE_URL  = 'payment/liqpaymagento_liqpay/server_website_url';
+
     /**
      * @var PaymentHelper
      */
@@ -73,34 +76,43 @@ class Data extends AbstractHelper
 
     public function getPublicKey()
     {
-        return trim($this->scopeConfig->getValue(
+        $value = trim($this->scopeConfig->getValue(
             self::XML_PATH_PUBLIC_KEY,
             ScopeInterface::SCOPE_STORE
         ));
+
+        return !empty($value) ? trim($value) : '';
     }
 
     public function getPrivateKey()
     {
-        return trim($this->scopeConfig->getValue(
+        $value = $this->scopeConfig->getValue(
             self::XML_PATH_PRIVATE_KEY,
             ScopeInterface::SCOPE_STORE
-        ));
+        );
+
+        return !empty($value) ? trim($value) : '';
     }
 
     public function getTestOrderSurfix()
     {
-        return trim($this->scopeConfig->getValue(
+        $value = $this->scopeConfig->getValue(
             self::XML_PATH_TEST_ORDER_SURFIX,
             ScopeInterface::SCOPE_STORE
-        ));
+        );
+
+        return !empty($value) ? trim($value) : '';
     }
 
     public function getLiqPayDescription(\Magento\Sales\Api\Data\OrderInterface $order = null)
     {
-        $description = trim($this->scopeConfig->getValue(
+        $value = $this->scopeConfig->getValue(
             self::XML_PATH_DESCRIPTION,
             ScopeInterface::SCOPE_STORE
-        ));
+        );
+
+        $description = !empty($value) ? trim($value) : '';
+
         $params = [
             '{order_id}' => $order->getIncrementId(),
         ];
@@ -134,5 +146,25 @@ class Data extends AbstractHelper
     public function getLogger()
     {
         return $this->_logger;
+    }
+
+    public function getFrontendWebsiteUrl()
+    {
+        $value = $this->scopeConfig->getValue(
+            self::XML_PATH_FRONTEND_WEBSITE_URL,
+            ScopeInterface::SCOPE_STORE
+        );
+
+        return !empty($value) ? trim($value) : '';
+    }
+
+    public function getServerWebsiteUrl()
+    {
+        $value = $this->scopeConfig->getValue(
+            self::XML_PATH_SERVER_WEBSITE_URL,
+            ScopeInterface::SCOPE_STORE
+        );
+
+        return !empty($value) ? trim($value) : '';
     }
 }

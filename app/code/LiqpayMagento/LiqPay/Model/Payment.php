@@ -104,4 +104,9 @@ class Payment extends \Magento\Payment\Model\Method\AbstractMethod
         }
         return parent::isAvailable($quote);
     }
+
+    public function getOrderRedirectUrl($order): string
+    {
+        return '/liqpay_redirect?id=' . $order->getId();
+    }
 }
