@@ -10,6 +10,7 @@
 
 namespace LiqpayMagento\LiqPay\Block;
 
+use Exception;
 use Magento\Framework\View\Element\Template;
 use Magento\Sales\Model\Order;
 use LiqpayMagento\LiqPay\Sdk\LiqPay;
@@ -20,6 +21,8 @@ class SubmitForm extends Template
 {
     protected $_order = null;
 
+    protected ?string $language;
+
     /* @var $_liqPay LiqPay */
     protected $_liqPay;
 
@@ -28,9 +31,9 @@ class SubmitForm extends Template
 
     public function __construct(
         Template\Context $context,
-        LiqPay $liqPay,
-        Helper $helper,
-        array $data = []
+        LiqPay           $liqPay,
+        Helper           $helper,
+        array            $data = []
     )
     {
         parent::__construct($context, $data);
@@ -62,13 +65,33 @@ class SubmitForm extends Template
     protected function _toHtml()
     {
         $order = $this->getOrder();
+        $language = $this->getLanguage();
+
         $html = $this->_liqPay->cnb_form(array(
             'action' => 'pay',
             'amount' => $order->getGrandTotal(),
             'currency' => $order->getOrderCurrencyCode(),
             'description' => $this->_helper->getLiqPayDescription($order),
             'order_id' => $order->getIncrementId(),
+            'language' => $language,
+            'result_url'=>$this->_helper->getServerWebsiteUrl() . '/liqpay/checkout/thnks?language='.$language.'&orderNumber=' . $order->getIncrementId(),
+            'server_url'=>$this->_helper->getServerWebsiteUrl() . '/V1/liqpay/callback'
         ));
         return $html;
+    }
+
+    public function getLanguage(): string
+    {
+        return $this->language ?? 'en';
+    }
+
+    public function setLanguage(string $language)
+    {
+        $this->language = $language;
+    }
+
+    public function getCacheLifetime()
+    {
+        return null;
     }
 }

@@ -1,0 +1,9 @@
+type Query {
+    LiqPayPaymentForm(id: String @doc(description: "The ID of the Order.")): PaymentFormRedirect @resolver(class:"LiqpayMagento\\LiqPay\\Model\\Resolver\\PaymentFormRedirect") @doc(description:"Return form details for LiqPay payment") @cache(cacheable: false)
+}
+type PaymentFormRedirect @doc(description: "Payment form Redirect LiqPay details") {
+    action: String
+    data: String
+    signature: String
+    language: String
+}

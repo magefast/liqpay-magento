@@ -87,6 +87,7 @@ class LiqPayCallback implements LiqPayCallbackInterface
         $data = $post['data'];
         $receivedSignature = $post['signature'];
 
+        //@todo - can add logic wit liqpay data
         $decodedData = $this->_liqPay->getDecodedData($data);
         $orderId = $decodedData['order_id'] ?? null;
         $receivedPublicKey = $decodedData['public_key'] ?? null;
@@ -172,6 +173,9 @@ class LiqPayCallback implements LiqPayCallbackInterface
             if ($transactionId) {
                 $historyMessage[] = __('LiqPay transaction id %1.', $transactionId);
             }
+
+            $historyMessage[] = '<br>'.json_encode($decodedData);
+
             if (count($historyMessage)) {
                 $order->addStatusHistoryComment(implode(' ', $historyMessage))
                     ->setIsCustomerNotified(true);
@@ -190,17 +194,20 @@ class LiqPayCallback implements LiqPayCallbackInterface
 
     protected function getRealOrder($status, $orderId)
     {
-//        if ($status == LiqPay::STATUS_SANDBOX) {
-//            $testOrderSurfix = $this->_helper->getTestOrderSurfix();
-//            if (!empty($testOrderSurfix)) {
-//                $testOrderSurfix = LiqPay::TEST_MODE_SURFIX_DELIM . $testOrderSurfix;
-//                if (strlen($testOrderSurfix) < strlen($orderId)
-//                    && substr($orderId, -strlen($testOrderSurfix)) == $testOrderSurfix
-//                ) {
-//                    $orderId = substr($orderId, 0, strlen($orderId) - strlen($testOrderSurfix));
-//                }
-//            }
-//        }
+        if ($status == LiqPay::STATUS_SANDBOX) {
+            $testOrderSurfix = $this->_helper->getTestOrderSurfix();
+            if (!empty($testOrderSurfix)) {
+                $testOrderSurfix = LiqPay::TEST_MODE_SURFIX_DELIM . $testOrderSurfix;
+                if (strlen($testOrderSurfix) < strlen($orderId)
+                    && substr($orderId, -strlen($testOrderSurfix)) == $testOrderSurfix
+                ) {
+                    $orderId = substr($orderId, 0, strlen($orderId) - strlen($testOrderSurfix));
+                }
+            }
+        }
+
+        $orderId = str_replace('-test', '', $orderId);
+
         return $this->_order->loadByIncrementId($orderId);
     }
 }

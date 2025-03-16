@@ -25,11 +25,11 @@
                     <label>Test Mode</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-<!--                <field id="sandbox_order_surfix" translate="label comment" type="text" sortOrder="20" showInDefault="1"-->
-<!--                       showInWebsite="1" showInStore="0">-->
-<!--                    <label>Test Order Surfix</label>-->
-<!--                    <comment><![CDATA[For example: 000000005-<b>test</b>]]></comment>-->
-<!--                </field>-->
+                <field id="sandbox_order_surfix" translate="label comment" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="0">
+                    <label>Test Order Surfix</label>
+                    <comment><![CDATA[For example: 000000005-<b>test</b>]]></comment>
+                </field>
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Title</label>
@@ -62,6 +62,14 @@
                     <label>LiqPay Callback Security Check</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Enable keys validation on request callback from liqpay. Don't set "No" because of fraud!]]></comment>
+                </field>
+                <field id="frontend_website_url" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Frontend Website URL</label>
+                </field>
+                <field id="server_website_url" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Server Website URL</label>
                 </field>
             </group>
         </section>

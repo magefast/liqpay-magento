@@ -28,6 +28,8 @@ class LiqPay extends \LiqPay
     const STATUS_FAILURE     = 'failure';
     const STATUS_ERROR       = 'error';
 
+    const DEFAULT_CHECKOUT_URL = 'https://www.liqpay.ua/api/3/checkout';
+
     // wait
     const STATUS_WAIT_SECURE = 'wait_secure';
     const STATUS_WAIT_ACCEPT = 'wait_accept';
@@ -54,20 +56,20 @@ class LiqPay extends \LiqPay
         }
     }
 
-    protected function prepareParams($params)
+    public function prepareParams($params)
     {
-//        if (!isset($params['sandbox'])) {
-//            $params['sandbox'] = (int)$this->_helper->isTestMode();
-//        }
+        if (!isset($params['sandbox'])) {
+            $params['sandbox'] = (int)$this->_helper->isTestMode();
+        }
         if (!isset($params['version'])) {
             $params['version'] = static::VERSION;
         }
-//        if (isset($params['order_id']) && $this->_helper->isTestMode()) {
-//            $surfix = $this->_helper->getTestOrderSurfix();
-//            if (!empty($surfix)) {
-//                $params['order_id'] .= self::TEST_MODE_SURFIX_DELIM . $surfix;
-//            }
-//        }
+        if (isset($params['order_id']) && $this->_helper->isTestMode()) {
+            $surfix = $this->_helper->getTestOrderSurfix();
+            if (!empty($surfix)) {
+                $params['order_id'] .= self::TEST_MODE_SURFIX_DELIM . $surfix;
+            }
+        }
         return $params;
     }
 
@@ -93,6 +95,12 @@ class LiqPay extends \LiqPay
         return parent::cnb_form($params);
     }
 
+    public function cnb_form_raw($params)
+    {
+        $params = $this->prepareParams($params);
+        return parent::cnb_form_raw($params);
+    }
+
     public function getDecodedData($data)
     {
         return json_decode(base64_decode($data), true, 1024);
@@ -104,5 +112,37 @@ class LiqPay extends \LiqPay
         $generatedSignature = base64_encode(sha1($privateKey . $data . $privateKey, 1));
         
         return $signature == $generatedSignature;
+    }
+
+
+    public function encode_params($params)
+    {
+        return base64_encode(json_encode($params));
+    }
+
+    public function cnb_params($params)
+    {
+        $params['public_key'] = $this->_helper->getPublicKey();
+
+        if (!isset($params['version'])) {
+            throw new \InvalidArgumentException('version is null');
+        }
+        if (!isset($params['amount'])) {
+            throw new \InvalidArgumentException('amount is null');
+        }
+        if (!isset($params['currency'])) {
+            throw new \InvalidArgumentException('currency is null');
+        }
+        if (!in_array($params['currency'], $this->_supportedCurrencies)) {
+            throw new \InvalidArgumentException('currency is not supported');
+        }
+        if ($params['currency'] == self::CURRENCY_RUR) {
+            $params['currency'] = self::CURRENCY_RUB;
+        }
+        if (!isset($params['description'])) {
+            throw new \InvalidArgumentException('description is null');
+        }
+
+        return $params;
     }
 }
